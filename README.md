@@ -36,7 +36,7 @@ This is an API credential, **not a wallet private key**. It stays on the server 
 
 ### Important: current public API behavior
 
-Bebop's current [authentication documentation](https://docs.bebop.xyz/core-concepts/authentication) says unauthenticated RFQ requests return widened, heavily rate-limited **upstream demo quotes**. Production pricing requires an API key. This is distinct from the app's synthetic mock mode:
+Bebop's current [authentication documentation](https://docs.bebop.xyz/core-concepts/authentication) says unauthenticated RFQ requests return widened, heavily rate-limited **upstream demo quotes that are not suitable for production use**. Production pricing requires an API key. This is distinct from the app's synthetic mock mode:
 
 | UI label                 | Source                                          | Meaning                                                              |
 | ------------------------ | ----------------------------------------------- | -------------------------------------------------------------------- |
