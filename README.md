@@ -4,6 +4,8 @@ A small, read-only quote explorer that maps a simplified LI.FI-style swap intent
 
 **No wallet connection, private keys, signatures, approvals, or transaction submission.**
 
+**[Open the live demo](https://rave-intent-rfq-explorer.vercel.app/)** · Deployed on Vercel from `main`. The live API uses Bebop's unauthenticated public demo pricing unless a server-side API key is configured.
+
 ![Live Base RFQ quote and execution details](docs/screenshots/02-live-base.png)
 
 ## Run locally
@@ -182,6 +184,7 @@ Docker configuration is supplied but was not run in the development environment,
 ## Submission and AI disclosure
 
 - Repository: [Hahn-G/rave-intent-rfq-explorer](https://github.com/Hahn-G/rave-intent-rfq-explorer)
+- Live demo: [rave-intent-rfq-explorer.vercel.app](https://rave-intent-rfq-explorer.vercel.app/)
 - Demo/screenshot: see [`docs/DEMO.md`](docs/DEMO.md)
 - AI assistance and verification: [`AI_USAGE.md`](AI_USAGE.md)
 

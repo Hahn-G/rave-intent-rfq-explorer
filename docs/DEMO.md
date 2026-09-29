@@ -1,5 +1,7 @@
 # Demo and verification
 
+Live demo: [rave-intent-rfq-explorer.vercel.app](https://rave-intent-rfq-explorer.vercel.app/)
+
 ## Screenshots
 
 Captured from the locally running production build on September 29, 2026. The live quote is a real unauthenticated Bebop response (public demo pricing), not a fabricated quote. Its expiry and prices are historical by the time you view the screenshot; request a fresh quote to inspect current data.
@@ -31,6 +33,8 @@ Quotes can expire in seconds. No signing, approval or transaction execution is o
 - Browser checks verified normalized base units, raw `SIG_SUCCESS`, explicit mock mode, cross-chain rejection and no horizontal overflow at 390 px.
 - Browser reported no page JavaScript errors in that walkthrough.
 - Desktop and mobile screenshots were visually inspected.
+- Vercel production deployment was marked Ready and served the expected Next.js page.
+- The production API returned HTTP 200 for a real Base WETH → USDC Bebop quote (`SIG_SUCCESS`, public demo access, calldata present), an LI.FI supported-chain lookup (Ethereum and Base listed), and a local mock quote (no calldata).
 
 Webpack is selected explicitly for reproducible local builds because this development environment restricted the helper port used by Turbopack's CSS compiler.
 
@@ -39,4 +43,3 @@ Webpack is selected explicitly for reproducible local builds because this develo
 - No authenticated Bebop API key was available; public demo responses were tested.
 - No wallet, transaction simulation, approval, signing, broadcasting, or settlement was performed.
 - Docker was not installed, so the supplied container configuration has not been run locally.
-- No hosted deployment has been created. The repository includes Vercel deployment instructions for the author's account.
