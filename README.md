@@ -193,7 +193,11 @@ Docker configuration is supplied but was not run in the development environment,
 - The comparison table keeps three results in the current view only. Live requests are sequential, may hit Bebop's public rate limit, and do not establish a simultaneous market curve. There is no historical quote storage.
 - No retries, quote caching, analytics or database. The user address is sent to Bebop as part of the requested quote and is not saved by this app.
 
-## Submission and AI disclosure
+## AI usage notes
+
+OpenAI Codex assisted with interpreting the assignment, reviewing the LI.FI and Bebop API documentation, implementing the adapter, clients and UI, writing tests and documentation, and checking the deployed demo. The author supplied the assignment and repository and chose the project scope. Tests use mocked responses; real API verification was read-only. No wallet private key was requested or used, and no transaction was signed or submitted. See [`AI_USAGE.md`](AI_USAGE.md) for the full disclosure and verification details.
+
+## Submission
 
 - Ready-to-send submission: [English](docs/SUBMISSION_EN.md) · [中文](docs/SUBMISSION_ZH.md)
 - Repository: [Hahn-G/rave-intent-rfq-explorer](https://github.com/Hahn-G/rave-intent-rfq-explorer)
