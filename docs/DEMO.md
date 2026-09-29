@@ -4,7 +4,7 @@ Live demo: [rave-intent-rfq-explorer.vercel.app](https://rave-intent-rfq-explore
 
 ## Screenshots
 
-Captured from the locally running production build on September 29, 2026. The live quote is a real unauthenticated Bebop response (public demo pricing), not a fabricated quote. Its expiry and prices are historical by the time you view the screenshot; request a fresh quote to inspect current data.
+Captured on September 29, 2026, from the local production build and deployed Vercel app. The live quotes are real unauthenticated Bebop responses (public demo pricing), not fabricated quotes. Their expiry and prices are historical by the time you view the screenshots; request fresh quotes to inspect current data.
 
 - [Workspace](screenshots/01-workspace.png)
 - [Live Base RFQ with execution details](screenshots/02-live-base.png)
@@ -23,7 +23,7 @@ Captured from the locally running production build on September 29, 2026. The li
 5. Click **Compare 3 trade sizes** to capture `0.01 / 0.1 / 1` WETH quotes. Review output, unit price, basis-point difference, timestamp and expiry; click **Inspect** on any row. Live requests are sequential and may be limited by Bebop's public demo API.
 6. Click **Check supported chains** to call the actual LI.FI Intents endpoint.
 7. Change the destination chain to Ethereum to show route rejection.
-8. Switch back to a same-chain route and explicitly select **Mock demo** to demonstrate the offline review path. It contains no executable transaction data. The comparison screenshot uses this mode so all three rows are reproducible; its prices are synthetic.
+8. Switch back to a same-chain route and explicitly select **Mock demo** to demonstrate the offline review path. It contains no executable transaction data. The synthetic comparison screenshot uses this mode so all three rows are reproducible; its prices are not market data.
 
 Quotes can expire in seconds. No signing, approval or transaction execution is offered.
 

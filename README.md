@@ -195,6 +195,7 @@ Docker configuration is supplied but was not run in the development environment,
 
 ## Submission and AI disclosure
 
+- Ready-to-send submission: [English](docs/SUBMISSION_EN.md) · [中文](docs/SUBMISSION_ZH.md)
 - Repository: [Hahn-G/rave-intent-rfq-explorer](https://github.com/Hahn-G/rave-intent-rfq-explorer)
 - Live demo: [rave-intent-rfq-explorer.vercel.app](https://rave-intent-rfq-explorer.vercel.app/)
 - Demo/screenshot: see [`docs/DEMO.md`](docs/DEMO.md)
