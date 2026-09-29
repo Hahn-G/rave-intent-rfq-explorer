@@ -4,6 +4,13 @@ import { useEffect, useRef, useState } from 'react';
 import { CHAINS, EXAMPLE_ADDRESS } from '@/config/chains';
 import type { SimplifiedIntent } from '@/adapters/lifi-intent';
 import type { QuoteMode, QuoteResult } from '@/services/quote';
+import {
+  compareTradeSizes,
+  comparisonSizes,
+  comparisonSummary,
+  priceDeltaBps,
+  type ComparisonRow,
+} from '@/services/comparison';
 
 const initial: SimplifiedIntent = {
   fromChain: 8453,
@@ -38,6 +45,8 @@ export default function Explorer() {
   const [quote, setQuote] = useState<QuoteResult | null>(null);
   const [error, setError] = useState<ApiError | null>(null);
   const [busy, setBusy] = useState(false);
+  const [compareBusy, setCompareBusy] = useState(false);
+  const [comparison, setComparison] = useState<ComparisonRow[]>([]);
   const [tab, setTab] = useState<'overview' | 'request' | 'response'>('overview');
   const [now, setNow] = useState(0);
   const [retryUntil, setRetryUntil] = useState(0);
@@ -54,6 +63,11 @@ export default function Explorer() {
   const seconds = quote ? Math.max(0, Math.ceil((quote.expiry * 1000 - now) / 1000)) : 0;
   const expired = !!quote && now > 0 && seconds === 0;
   const cooldown = Math.max(0, Math.ceil((retryUntil - now) / 1000));
+  const sizes = comparisonSizes(intent.fromToken);
+  const compared = comparison.filter(
+    (row): row is Extract<ComparisonRow, { status: 'success' }> => row.status === 'success',
+  );
+  const baseline = compared[0]?.quote;
 
   function update(patch: Partial<SimplifiedIntent>) {
     requestId.current++;
@@ -61,6 +75,7 @@ export default function Explorer() {
     setQuote(null);
     setError(null);
     setBusy(false);
+    setComparison([]);
   }
   async function submit(event: React.FormEvent) {
     event.preventDefault();
@@ -113,6 +128,36 @@ export default function Explorer() {
     }
   }
 
+  async function compare() {
+    const id = ++requestId.current;
+    setComparison([]);
+    setCompareBusy(true);
+    setError(null);
+    setQuote(null);
+    setTab('overview');
+    try {
+      const rows = await compareTradeSizes(intent, mode, sizes, (progress) => {
+        if (id === requestId.current) setComparison(progress);
+      });
+      if (id !== requestId.current) return;
+      const first = rows.find((row) => row.status === 'success' && row.size === intent.amountIn);
+      const selected = first ?? rows.find((row) => row.status === 'success');
+      if (selected?.status === 'success') {
+        setNow(Date.now());
+        setQuote(selected.quote);
+      }
+      const limited = rows.find(
+        (row) => row.status === 'error' && row.error.code === 'RATE_LIMITED',
+      );
+      if (limited?.status === 'error') {
+        setNow(Date.now());
+        setRetryUntil(Date.now() + (limited.error.retryAfter ?? 30) * 1000);
+      }
+    } finally {
+      if (id === requestId.current) setCompareBusy(false);
+    }
+  }
+
   return (
     <>
       <header className="topbar">
@@ -144,7 +189,7 @@ export default function Explorer() {
               <span className="small-tag">EXACT INPUT</span>
             </div>
             <form onSubmit={submit}>
-              <fieldset disabled={busy}>
+              <fieldset disabled={busy || compareBusy}>
                 <div className="field-grid">
                   <label>
                     From chain
@@ -204,10 +249,7 @@ export default function Explorer() {
                     onChange={(e) => update({ amountIn: e.target.value })}
                   />
                   <div className="presets">
-                    {(intent.fromToken === 'WETH'
-                      ? ['0.01', '0.1', '1']
-                      : ['10', '100', '1000']
-                    ).map((size) => (
+                    {sizes.map((size) => (
                       <button type="button" key={size} onClick={() => update({ amountIn: size })}>
                         {size}
                       </button>
@@ -265,6 +307,7 @@ export default function Explorer() {
                       setMode('live');
                       setQuote(null);
                       setError(null);
+                      setComparison([]);
                     }}
                   >
                     Live API
@@ -277,6 +320,7 @@ export default function Explorer() {
                       setMode('mock');
                       setQuote(null);
                       setError(null);
+                      setComparison([]);
                     }}
                   >
                     Mock demo
@@ -300,6 +344,21 @@ export default function Explorer() {
                         ? 'Explore mock quote'
                         : 'Request RFQ quote'}
                 </button>
+                <button
+                  className="compare-trigger"
+                  disabled={busy || compareBusy || (mode === 'live' && cooldown > 0)}
+                  type="button"
+                  onClick={compare}
+                >
+                  {compareBusy
+                    ? `Comparing ${comparison.filter((row) => row.status !== 'skipped').length}/${sizes.length}…`
+                    : mode === 'live' && cooldown > 0
+                      ? `Compare in ${cooldown}s`
+                      : `Compare ${sizes.length} trade sizes`}
+                </button>
+                <p className="compare-hint">
+                  {sizes.join(' / ')} {intent.fromToken} · requested one at a time
+                </p>
               </fieldset>
             </form>
             <p className="no-wallet">No wallet connection. No signing. No transactions.</p>
@@ -497,6 +556,134 @@ export default function Explorer() {
             </div>
           </section>
         </div>
+        <section
+          className="panel compare-panel"
+          aria-labelledby="compare-title"
+          aria-busy={compareBusy}
+        >
+          <div className="panel-heading">
+            <div>
+              <span className="step">03</span>
+              <h2 id="compare-title">Compare trade sizes</h2>
+            </div>
+            <span className="small-tag">UNIT PRICE</span>
+          </div>
+          <div className="compare-content">
+            {comparison.length === 0 ? (
+              <p className="compare-intro">
+                Request {sizes.join(', ')} {intent.fromToken} quotes to see how effective unit price
+                changes with size. Each request is made separately; no results are retained after
+                changing the route.
+              </p>
+            ) : (
+              <>
+                <p className="compare-progress" role="status">
+                  {compareBusy
+                    ? `${comparison.length} of ${sizes.length} sizes processed…`
+                    : `${compared.length} of ${sizes.length} sizes quoted · ${mode === 'mock' ? 'synthetic mock' : 'live Bebop API'}`}
+                </p>
+                <p className="compare-scroll-hint">
+                  Swipe sideways to see price difference, expiry and quote details →
+                </p>
+                <div className="compare-scroll">
+                  <table className="compare-table">
+                    <caption>
+                      Quotes captured sequentially for the same chain, token pair and addresses
+                    </caption>
+                    <thead>
+                      <tr>
+                        <th scope="col">Sell size</th>
+                        <th scope="col">Buy amount</th>
+                        <th scope="col">Effective price</th>
+                        <th scope="col">vs smallest</th>
+                        <th scope="col">Captured / expiry</th>
+                        <th scope="col">Quote</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {comparison.map((row) =>
+                        row.status === 'success' ? (
+                          <tr key={row.size}>
+                            <th scope="row">
+                              {row.size} {row.quote.sell.symbol}
+                            </th>
+                            <td>
+                              {row.quote.buy.formatted} {row.quote.buy.symbol}
+                            </td>
+                            <td>
+                              {row.quote.effectivePrice} {row.quote.buy.symbol}/
+                              {row.quote.sell.symbol}
+                            </td>
+                            <td>
+                              {baseline && row.quote === baseline
+                                ? 'Reference'
+                                : baseline
+                                  ? `${priceDeltaBps(row.quote, baseline)} bps`
+                                  : '—'}
+                            </td>
+                            <td>
+                              <time dateTime={row.quote.fetchedAt}>
+                                {new Date(row.quote.fetchedAt).toLocaleTimeString()}
+                              </time>
+                              <span
+                                className={
+                                  row.quote.expiry * 1000 <= now
+                                    ? 'compare-expired'
+                                    : 'compare-valid'
+                                }
+                              >
+                                {row.quote.expiry * 1000 <= now
+                                  ? 'Expired'
+                                  : `${Math.ceil((row.quote.expiry * 1000 - now) / 1000)}s left`}
+                              </span>
+                            </td>
+                            <td>
+                              <button
+                                className="inspect-button"
+                                onClick={() => {
+                                  setQuote(row.quote);
+                                  setTab('overview');
+                                  document
+                                    .getElementById('quote-title')
+                                    ?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+                                }}
+                              >
+                                Inspect
+                              </button>
+                            </td>
+                          </tr>
+                        ) : (
+                          <tr key={row.size}>
+                            <th scope="row">
+                              {row.size} {intent.fromToken}
+                            </th>
+                            <td colSpan={5} className="compare-error">
+                              {row.status === 'error'
+                                ? `${row.error.code}: ${row.error.message}`
+                                : row.reason}
+                            </td>
+                          </tr>
+                        ),
+                      )}
+                    </tbody>
+                  </table>
+                </div>
+                {!compareBusy && (
+                  <div className="compare-analysis">
+                    <strong>Quote analysis</strong>
+                    <p>{comparisonSummary(comparison, now)}</p>
+                    {comparison.some((row) => row.status !== 'success') && (
+                      <p>
+                        Failed or skipped sizes are excluded from the price comparison; no
+                        replacement values were invented.
+                      </p>
+                    )}
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        </section>
         <section className="lifi-panel">
           <div>
             <p className="eyebrow">UPSTREAM CONTEXT</p>

@@ -7,6 +7,7 @@ This project was developed with OpenAI Codex assistance. The author supplied the
 - Interpreting the assignment and separating same-chain RFQ from a full cross-chain intent lifecycle.
 - Reading current LI.FI and Bebop documentation and checking public endpoints.
 - Implementing the adapter, clients, validation, API routes, UI, styles, tests and documentation.
+- Adding and checking the three-size comparison, exact integer basis-point calculations, rate-limit handling and a labeled synthetic-demo screenshot.
 - Running automated checks and investigating failures.
 
 ## Evidence and boundaries

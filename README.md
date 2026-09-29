@@ -22,6 +22,8 @@ pnpm dev
 
 Open [localhost:3000](http://localhost:3000). A public example address and a Base WETH → USDC intent are prefilled. Click **Request RFQ quote** for a real API request, or explicitly select **Mock demo** for an offline fixture. Changing an input clears the previous quote. Quotes are never automatically refreshed.
 
+Click **Compare 3 trade sizes** to request WETH `0.01 / 0.1 / 1` or stablecoin `10 / 100 / 1000` quotes for the same route and addresses. The table retains all three outcomes for inspection, including errors and skipped requests. It shows output, effective unit price, difference from the smallest successful size in basis points, capture time, and expiry. Each row can be opened in the full quote inspector.
+
 Optional production RFQ access:
 
 ```dotenv
@@ -78,6 +80,8 @@ flowchart LR
   Client --> RFQ[Bebop GET /pmm/chain/v3/quote]
   RFQ --> Validation[Validate response against intent]
   Validation --> View[Quote fields + analysis + raw JSON]
+  UI --> Compare[Compare trade sizes]
+  Compare --> API
   UI --> Chains[GET /api/lifi/chains]
   Chains --> LIFI[LI.FI GET /chains/supported]
 ```
@@ -142,6 +146,12 @@ Errors are structured as `{ "error": { "code", "message", "retryAfter"? } }`:
 
 Bebop may return an error object with HTTP 200; this is treated as an error, not a successful quote.
 
+### Trade-size comparison — bonus
+
+The browser sends three independent `POST /api/quote` requests using the same intent except `amountIn`; no new API or transaction endpoint is involved. Live requests run sequentially with an 800 ms pause to reduce pressure on the public demo rate limit. The table keeps successful results even if a later size fails. On HTTP 429 it stops requesting, marks remaining sizes skipped, and applies the returned cooldown. It never fabricates a missing price or switches to mock mode. Mock comparisons are explicitly labeled synthetic.
+
+The difference column compares **output per input token** using raw integer amounts, avoiding floating-point precision loss. Positive basis points mean a higher effective unit price than the smallest successful quote. It is an observational comparison, **not** a slippage or price-impact estimate: quotes are captured at different times, may expire within seconds, and omit gas. No comparison history is stored after changing the route or refreshing the page.
+
 ### `GET /api/lifi/chains` — bonus integration
 
 Calls the real open `https://order.li.fi/chains/supported` endpoint, on demand. The UI displays Ethereum/Base availability, timestamp and the normalized response. It uses the response's `chainId`, **not** its internal database `id`. LI.FI coverage is informational and does not gate or imply Bebop liquidity. No LI.FI order is created.
@@ -155,7 +165,7 @@ pnpm build
 pnpm start
 ```
 
-Tests mock fetch responses and cover precision, chain/token validation, address normalization, receiver preservation, RFQ mapping, auth, HTTP 200 error envelopes, rate limits, network failures, timeouts, response mismatches, expiry, empty calldata, mock isolation, LI.FI chain IDs and the app route. Tests do not spend live API quota. CI runs tests, typechecking and a production build.
+Tests mock fetch responses and cover precision, chain/token validation, address normalization, receiver preservation, RFQ mapping, auth, HTTP 200 error envelopes, rate limits, network failures, timeouts, response mismatches, expiry, empty calldata, mock isolation, LI.FI chain IDs, the app route, exact basis-point comparison and partial results after a rate limit. Tests do not spend live API quota. CI runs tests, typechecking and a production build.
 
 ## Docker / deployment
 
@@ -178,7 +188,7 @@ Docker configuration is supplied but was not run in the development environment,
 - Before execution elsewhere, independently verify chain, token contracts, participant addresses, allowance, gas, returned contracts, signatures and expiry. A quote can expire before inclusion.
 - Approval gives a spender authority over tokens. Prefer exact-amount allowances and verify the spender independently. Never infer the spender from another contract field.
 - API keys stay on the server, but the sample app has no per-user authentication or durable abuse protection. Add platform rate limits and access controls before exposing an authenticated, quota-bearing API broadly.
-- Trade-size presets make manual exploration easy; there is no simultaneous comparison table or historical quote storage.
+- The comparison table keeps three results in the current view only. Live requests are sequential, may hit Bebop's public rate limit, and do not establish a simultaneous market curve. There is no historical quote storage.
 - No retries, quote caching, analytics or database. The user address is sent to Bebop as part of the requested quote and is not saved by this app.
 
 ## Submission and AI disclosure

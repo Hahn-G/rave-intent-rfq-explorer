@@ -11,6 +11,7 @@ Captured from the locally running production build on September 29, 2026. The li
 - [Explicit mock mode and LI.FI chain lookup](screenshots/03-mock-demo.png)
 - [Unsupported cross-chain route](screenshots/04-route-error.png)
 - [Mobile layout](screenshots/05-mobile.png)
+- [Three-size quote comparison (explicit synthetic mock)](screenshots/06-size-comparison.png)
 
 ## One-minute walkthrough
 
@@ -18,19 +19,21 @@ Captured from the locally running production build on September 29, 2026. The li
 2. Select **Live API** and request a quote. Point out the **Public demo** label: the request is real, but unauthenticated Bebop pricing is widened.
 3. Inspect buy amount, effective price, expiry, approval target, settlement address, transaction target/value and calldata presence.
 4. Open **Normalized request** to show base-unit amount and checksum addresses; open **Raw response** to inspect returned transaction data.
-5. Click **Check supported chains** to call the actual LI.FI Intents endpoint.
-6. Change the destination chain to Ethereum to show route rejection.
-7. Switch back to a same-chain route and explicitly select **Mock demo** to demonstrate the offline review path. It contains no executable transaction data.
+5. Click **Compare 3 trade sizes** to capture `0.01 / 0.1 / 1` WETH quotes. Review output, unit price, basis-point difference, timestamp and expiry; click **Inspect** on any row. Live requests are sequential and may be limited by Bebop's public demo API.
+6. Click **Check supported chains** to call the actual LI.FI Intents endpoint.
+7. Change the destination chain to Ethereum to show route rejection.
+8. Switch back to a same-chain route and explicitly select **Mock demo** to demonstrate the offline review path. It contains no executable transaction data. The comparison screenshot uses this mode so all three rows are reproducible; its prices are synthetic.
 
 Quotes can expire in seconds. No signing, approval or transaction execution is offered.
 
 ## Verification performed
 
-- 45 Vitest tests passed with mocked network responses.
+- 47 Vitest tests passed with mocked network responses, including exact basis-point math and partial comparison results after rate limiting.
 - TypeScript validation and `next build --webpack` passed.
 - Real Bebop quotes were retrieved on Ethereum and Base, first through direct HTTP and then through the app API and browser.
 - Real LI.FI `/chains/supported` lookup succeeded in the app.
 - Browser checks verified normalized base units, raw `SIG_SUCCESS`, explicit mock mode, cross-chain rejection and no horizontal overflow at 390 px.
+- Browser checks verified the three-row comparison, row inspection, synthetic labeling and a horizontally scrollable table at 390 px without page overflow.
 - Browser reported no page JavaScript errors in that walkthrough.
 - Desktop and mobile screenshots were visually inspected.
 - Vercel production deployment was marked Ready and served the expected Next.js page.

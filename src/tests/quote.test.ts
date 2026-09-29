@@ -4,6 +4,12 @@ import { EXAMPLE_ADDRESS } from '@/config/chains';
 import { BebopClient, parseBebopResponse } from '@/clients/bebop';
 import { LiFiClient } from '@/clients/lifi';
 import { effectivePrice, mockQuote, normalizeQuote } from '@/services/quote';
+import {
+  compareTradeSizes,
+  comparisonSizes,
+  comparisonSummary,
+  priceDeltaBps,
+} from '@/services/comparison';
 import { POST } from '@/app/api/quote/route';
 
 const intent = {
@@ -179,6 +185,78 @@ describe('Quote analysis', () => {
     expect(q.access).toBe('local-fixture');
     expect(q.transaction.hasCalldata).toBe(false);
     expect(q.approvalTarget).toBeNull();
+  });
+});
+describe('Trade-size comparison', () => {
+  it('uses token-appropriate sizes and compares exact base-unit ratios', () => {
+    expect(comparisonSizes('WETH')).toEqual(['0.01', '0.1', '1']);
+    expect(comparisonSizes('USDC')).toEqual(['10', '100', '1000']);
+    const small = normalizeQuote(
+      request,
+      {
+        ...mockQuote(request),
+        buyTokens: {
+          [request.buyToken.address]: { amount: '270000000', decimals: 6, symbol: 'USDC' },
+        },
+      },
+      'live',
+      false,
+    );
+    const largeRequest = adapter.normalize({ ...intent, amountIn: '1' });
+    const large = normalizeQuote(
+      largeRequest,
+      {
+        ...mockQuote(largeRequest),
+        buyTokens: {
+          [request.buyToken.address]: { amount: '2673000000', decimals: 6, symbol: 'USDC' },
+        },
+      },
+      'live',
+      false,
+    );
+    expect(priceDeltaBps(large, small)).toBe('−100.00');
+    expect(priceDeltaBps(small, large)).toBe('+101.01');
+    expect(
+      comparisonSummary(
+        [
+          { size: '0.1', status: 'success', quote: small },
+          { size: '1', status: 'success', quote: large },
+        ],
+        Date.now(),
+      ),
+    ).toContain('100.00 bps lower');
+  });
+  it('keeps successful rows and skips remaining sizes after a rate limit', async () => {
+    const first = normalizeQuote(request, mockQuote(request), 'mock', false);
+    const fetcher = vi
+      .fn<typeof fetch>()
+      .mockResolvedValueOnce(new Response(JSON.stringify(first)))
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify({
+            error: {
+              code: 'RATE_LIMITED',
+              message: 'Try later.',
+              retryAfter: 30,
+            },
+          }),
+          { status: 429 },
+        ),
+      );
+    const updates: unknown[] = [];
+    const rows = await compareTradeSizes(
+      intent,
+      'mock',
+      ['0.1', '1', '10'],
+      (progress) => updates.push(progress),
+      fetcher,
+      async () => {},
+    );
+    expect(fetcher).toHaveBeenCalledTimes(2);
+    expect(rows.map((row) => row.status)).toEqual(['success', 'error', 'skipped']);
+    expect(rows[1]).toMatchObject({ error: { retryAfter: 30 } });
+    expect(updates.at(-1)).toEqual(rows);
+    expect(comparisonSummary(rows, Date.now())).toContain('At least two successful quotes');
   });
 });
 describe('LI.FI', () => {
