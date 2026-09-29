@@ -1,0 +1,7 @@
+services:
+  explorer:
+    build: .
+    ports:
+      - '3000:3000'
+    environment:
+      BEBOP_API_KEY: ${BEBOP_API_KEY:-}
