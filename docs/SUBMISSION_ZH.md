@@ -21,7 +21,7 @@ LI.FI Intent 表达的是用户期望的交换结果，而不规定完整执行�
 
 线上 Live 模式在未提供 API Key 时调用 Bebop 的公共演示报价。Bebop [认证文档](https://docs.bebop.xyz/core-concepts/authentication)明确说明：未认证 RFQ 报价价格较差、限流严格，**不适合生产使用**。独立的本地 Mock 模式才是合成数据，不包含可执行交易数据。截图记录的是真实公共演示 API 响应，但其中报价已过期。工具不会连接钱包、授权、签名、发送或结算交易。
 
-验证包括 47 个使用模拟 API 响应的通过测试、TypeScript 检查、生产构建，以及 Ethereum 和 Base 真实 Bebop 报价的浏览器检查。仓库提供 Docker 配置，但开发环境未安装 Docker，因此未验证容器启动。我使用 OpenAI Codex 辅助阅读接口文档、实现功能、编写测试和文档并验证结果，详情已在上述 AI 使用说明中披露。
+验证包括 47 个使用模拟 API 响应的通过测试、TypeScript 检查、生产构建，以及 Ethereum 和 Base 真实 Bebop 报价的浏览器检查。仓库提供 Docker 配置，但开发环境未安装 Docker，因此未验证容器启动。我选择了 Web 应用方向，审阅了演示，并推动三档金额比较和公共演示报价说明的完善。OpenAI Codex 辅助了接口调研、实现、测试、文档及验证工作；具体内容见 [AI 使用说明](https://github.com/Hahn-G/rave-intent-rfq-explorer/blob/main/AI_USAGE.md)。
 
 感谢审阅！
 

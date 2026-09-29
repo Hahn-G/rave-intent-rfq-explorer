@@ -1,6 +1,12 @@
 # AI usage notes
 
-This project was developed with OpenAI Codex assistance. The author supplied the assignment and repository, reviewed the proposed scope, and selected a Next.js/TypeScript web app.
+The author initiated this project with the assignment and repository, chose the Next.js/TypeScript web-app direction, reviewed the demo, and guided improvements to the quote comparison and public-demo disclosures. OpenAI Codex supported the implementation and verification work described below.
+
+## Author direction and review
+
+- Selected the web-app approach and kept the scope focused on same-chain, read-only RFQ inspection.
+- Reviewed the demo behavior and requested a three-size quote comparison rather than presets alone.
+- Asked for clearer treatment of token precision, quote expiry, unauthenticated pricing, and submission materials.
 
 ## AI-assisted work
 
@@ -21,4 +27,4 @@ This project was developed with OpenAI Codex assistance. The author supplied the
 - Mock mode is visibly labeled, does not replace API errors, and produces no usable transaction data.
 - No private key was requested or used. No transaction, approval, order submission, signing or settlement was performed.
 
-The author should review and understand the implementation before submission. AI assistance is disclosed rather than presenting generated work as independently hand-authored. Actual final checks and demo instructions are recorded in `docs/DEMO.md`.
+The author remains responsible for the final submission. This note records both the author's direction and the AI-assisted work; actual checks and demo instructions are recorded in `docs/DEMO.md`.

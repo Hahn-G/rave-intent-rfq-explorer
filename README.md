@@ -195,7 +195,7 @@ Docker configuration is supplied but was not run in the development environment,
 
 ## AI usage notes
 
-OpenAI Codex assisted with interpreting the assignment, reviewing the LI.FI and Bebop API documentation, implementing the adapter, clients and UI, writing tests and documentation, and checking the deployed demo. The author supplied the assignment and repository and chose the project scope. Tests use mocked responses; real API verification was read-only. No wallet private key was requested or used, and no transaction was signed or submitted. See [`AI_USAGE.md`](AI_USAGE.md) for the full disclosure and verification details.
+The author supplied the assignment and repository, chose the Next.js/TypeScript web-app direction, reviewed the demo, and guided improvements to trade-size comparison and public-demo disclosures. OpenAI Codex assisted with API research, implementation, tests, documentation, and verification. Tests use mocked responses; real API verification was read-only. No wallet private key was requested or used, and no transaction was signed or submitted. See [`AI_USAGE.md`](AI_USAGE.md) for the full disclosure and verification details.
 
 ## Submission
 

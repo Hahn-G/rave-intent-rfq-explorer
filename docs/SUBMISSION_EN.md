@@ -21,7 +21,7 @@ The quote view shows the sell and buy amounts, effective price, expiry countdown
 
 The public live mode calls Bebop without an API key. Bebop’s [authentication documentation](https://docs.bebop.xyz/core-concepts/authentication) explicitly states that unauthenticated RFQ quotes are widened, heavily rate-limited, and **not suitable for production use**. The separate local Mock mode is synthetic and has no executable transaction data. The screenshot is a historical capture of real public-demo responses; its quotes have expired. The tool does not connect a wallet, sign, approve, submit, or settle transactions.
 
-Validation includes 47 passing unit tests with mocked API responses, TypeScript checking, a production build, and browser checks of live Bebop quotes on Ethereum and Base. Docker configuration is included, though Docker was unavailable in the development environment. I used OpenAI Codex to help research the APIs, implement the app, write tests and documentation, and verify the result; the disclosure above gives the details.
+Validation includes 47 passing unit tests with mocked API responses, TypeScript checking, a production build, and browser checks of live Bebop quotes on Ethereum and Base. Docker configuration is included, though Docker was unavailable in the development environment. I selected the web-app direction, reviewed the demo, and guided the trade-size comparison and public-demo disclosures. I used OpenAI Codex to assist with API research, implementation, tests, documentation, and verification; the [AI usage notes](https://github.com/Hahn-G/rave-intent-rfq-explorer/blob/main/AI_USAGE.md) provide the details.
 
 Thank you for reviewing my submission.
 
