@@ -12,6 +12,7 @@ Captured from the locally running production build on September 29, 2026. The li
 - [Unsupported cross-chain route](screenshots/04-route-error.png)
 - [Mobile layout](screenshots/05-mobile.png)
 - [Three-size quote comparison (explicit synthetic mock)](screenshots/06-size-comparison.png)
+- [Three-size comparison with real Bebop public demo responses](screenshots/07-live-size-comparison.png)
 
 ## One-minute walkthrough
 
@@ -38,6 +39,7 @@ Quotes can expire in seconds. No signing, approval or transaction execution is o
 - Desktop and mobile screenshots were visually inspected.
 - Vercel production deployment was marked Ready and served the expected Next.js page.
 - The production API returned HTTP 200 for a real Base WETH → USDC Bebop quote (`SIG_SUCCESS`, public demo access, calldata present), an LI.FI supported-chain lookup (Ethereum and Base listed), and a local mock quote (no calldata).
+- The deployed comparison returned three real Base WETH → USDC public demo quotes for `0.01 / 0.1 / 1` WETH. The table calculated `+0.48` and `−0.28` bps versus the smallest quote and labeled the results expired shortly afterward.
 
 Webpack is selected explicitly for reproducible local builds because this development environment restricted the helper port used by Turbopack's CSS compiler.
 

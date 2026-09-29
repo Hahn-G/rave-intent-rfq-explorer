@@ -14,6 +14,7 @@ This project was developed with OpenAI Codex assistance. The author supplied the
 
 - Real read-only requests were made to Bebop on Ethereum and Base, and to LI.FI `/chains/supported` during development. Successful RFQ responses contained `SIG_SUCCESS` and transaction data.
 - After deployment, the public Vercel site and its live RFQ, LI.FI and mock API paths were checked independently; the production RFQ returned `SIG_SUCCESS` and calldata in Bebop public demo mode.
+- The deployed comparison was exercised against three real Bebop public demo responses, and a historical screenshot was saved with visible expiry labels. The displayed basis-point differences are observations across sequential requests, not a slippage claim.
 - The first Base request exposed Bebop's checksum requirement; the implementation normalizes all outgoing EVM addresses.
 - Current Bebop docs distinguish unauthenticated public demo pricing from authenticated access. The UI and README preserve that distinction.
 - Automated tests use local fixtures / mocked network responses. Passing tests does not prove live liquidity or on-chain execution.

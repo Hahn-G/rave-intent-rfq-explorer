@@ -8,6 +8,8 @@ A small, read-only quote explorer that maps a simplified LI.FI-style swap intent
 
 ![Live Base RFQ quote and execution details](docs/screenshots/02-live-base.png)
 
+[View the live three-size comparison screenshot](docs/screenshots/07-live-size-comparison.png) (captured quotes are historical and expired).
+
 ## Run locally
 
 Requires Node.js 22+ and pnpm 11.19.0 (`npm install -g pnpm@11.19.0`).
