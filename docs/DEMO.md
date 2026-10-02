@@ -4,7 +4,7 @@ Live demo: [rave-intent-rfq-explorer.vercel.app](https://rave-intent-rfq-explore
 
 ## Screenshots
 
-Captured on September 29, 2026, from the local production build and deployed Vercel app. The live quotes are real unauthenticated Bebop responses (public demo pricing), not fabricated quotes. Their expiry and prices are historical by the time you view the screenshots; request fresh quotes to inspect current data.
+Captured on September 29, 2026, from the local production build and deployed Vercel app, before authenticated access was enabled. The pictured live quotes are real unauthenticated Bebop responses (public demo pricing), not fabricated quotes. Their expiry and prices are historical by the time you view the screenshots; request fresh quotes to inspect current authenticated data.
 
 - [Workspace](screenshots/01-workspace.png)
 - [Live Base RFQ with execution details](screenshots/02-live-base.png)
@@ -17,10 +17,10 @@ Captured on September 29, 2026, from the local production build and deployed Ver
 ## One-minute walkthrough
 
 1. Start the app and keep Base → Base, WETH → USDC, amount `0.1` and the public example address.
-2. Select **Live API** and request a quote. Point out the **Public demo** label: the request is real, but unauthenticated Bebop pricing is widened.
+2. Select **Live API** and request a quote. The hosted app should label the response **Authenticated**; local copies without a key will show **Public demo** and receive widened demo pricing.
 3. Inspect buy amount, effective price, expiry, approval target, settlement address, transaction target/value and calldata presence.
 4. Open **Normalized request** to show base-unit amount and checksum addresses; open **Raw response** to inspect returned transaction data.
-5. Click **Compare 3 trade sizes** to capture `0.01 / 0.1 / 1` WETH quotes. Review output, unit price, basis-point difference, timestamp and expiry; click **Inspect** on any row. Live requests are sequential and may be limited by Bebop's public demo API.
+5. Click **Compare 3 trade sizes** to capture `0.01 / 0.1 / 1` WETH quotes. Review output, unit price, basis-point difference, timestamp and expiry; click **Inspect** on any row. Live requests are sequential and may still be rate-limited.
 6. Click **Check supported chains** to call the actual LI.FI Intents endpoint.
 7. Change the destination chain to Ethereum to show route rejection.
 8. Switch back to a same-chain route and explicitly select **Mock demo** to demonstrate the offline review path. It contains no executable transaction data. The synthetic comparison screenshot uses this mode so all three rows are reproducible; its prices are not market data.
@@ -40,11 +40,12 @@ Quotes can expire in seconds. No signing, approval or transaction execution is o
 - Vercel production deployment was marked Ready and served the expected Next.js page.
 - The production API returned HTTP 200 for a real Base WETH → USDC Bebop quote (`SIG_SUCCESS`, public demo access, calldata present), an LI.FI supported-chain lookup (Ethereum and Base listed), and a local mock quote (no calldata).
 - The deployed comparison returned three real Base WETH → USDC public demo quotes for `0.01 / 0.1 / 1` WETH. The table calculated `+0.48` and `−0.28` bps versus the smallest quote and labeled the results expired shortly afterward.
+- On October 2, 2026, a server-side Bebop API key was added to Vercel Production and a fresh deployment reached Ready. The hosted app then returned a live Base WETH → USDC quote labeled `LIVE API · AUTHENTICATED`, with `SIG_SUCCESS`, execution fields and calldata present. The key was never added to the repository or browser code.
 
 Webpack is selected explicitly for reproducible local builds because this development environment restricted the helper port used by Turbopack's CSS compiler.
 
 ## Not verified / not performed
 
-- No authenticated Bebop API key was available; public demo responses were tested.
+- The authenticated three-size comparison has not been rechecked; the saved comparison screenshot still shows historical public demo responses.
 - No wallet, transaction simulation, approval, signing, broadcasting, or settlement was performed.
 - Docker was not installed, so the supplied container configuration has not been run locally.

@@ -4,7 +4,7 @@ A small, read-only quote explorer that maps a simplified LI.FI-style swap intent
 
 **No wallet connection, private keys, signatures, approvals, or transaction submission.**
 
-**[Open the live demo](https://rave-intent-rfq-explorer.vercel.app/)** · Deployed on Vercel from `main`. The live API uses Bebop's unauthenticated public demo pricing unless a server-side API key is configured.
+**[Open the live demo](https://rave-intent-rfq-explorer.vercel.app/)** · Deployed on Vercel from `main`. The hosted Live API is configured with a server-side Bebop API key; local copies without a key use Bebop's unauthenticated public demo pricing.
 
 ![Live Base RFQ quote and execution details](docs/screenshots/02-live-base.png)
 
@@ -184,7 +184,7 @@ Docker configuration is supplied but was not run in the development environment,
 ## Limitations and execution assumptions
 
 - Only a curated token list and same-chain exact-input swaps. No bridging, native ETH input, multi-token orders or full intent lifecycle.
-- Successful real API responses depend on current liquidity, provider availability and access policy. No production API key is included.
+- Successful real API responses depend on current liquidity, provider availability and access policy. The hosted demo's API key is stored only in Vercel; no key is included in this repository.
 - Quoted output is not a profitability estimate. Gas is excluded, prices may include provider fees, and fixed mock prices are not market data.
 - No balance/allowance lookup, calldata decoding, simulation, signature validation, or contract allowlist verification. Calldata presence is only a structural observation.
 - Before execution elsewhere, independently verify chain, token contracts, participant addresses, allowance, gas, returned contracts, signatures and expiry. A quote can expire before inclusion.
